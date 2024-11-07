@@ -16,7 +16,7 @@
 # under the License.
 import re
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Optional,TYPE_CHECKING
 
 from sqlalchemy import types
 from sqlalchemy.dialects.mssql.base import SMALLDATETIME
@@ -30,7 +30,7 @@ from superset.db_engine_specs.exceptions import (
 )
 from superset.sql_parse import ParsedQuery
 from superset.utils.core import GenericDataType
-
+from superset.models.core import Database
 
 class KustoSqlEngineSpec(BaseEngineSpec):  # pylint: disable=abstract-method
     limit_method = LimitMethod.WRAP_SQL
@@ -73,6 +73,10 @@ class KustoSqlEngineSpec(BaseEngineSpec):  # pylint: disable=abstract-method
             GenericDataType.TEMPORAL,
         ),
     )
+
+    @classmethod
+    def get_allows_alias_in_select(cls, database: Database) -> bool:
+        return False
 
     @classmethod
     def get_dbapi_exception_mapping(cls) -> dict[type[Exception], type[Exception]]:

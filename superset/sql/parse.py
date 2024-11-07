@@ -68,6 +68,7 @@ SQLGLOT_DIALECTS = {
     # "impala": ???
     # "kustokql": ???
     # "kylin": ???
+    "kustosql": Dialects.TSQL,
     "mssql": Dialects.TSQL,
     "mysql": Dialects.MYSQL,
     "netezza": Dialects.POSTGRES,
