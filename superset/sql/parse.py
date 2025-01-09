@@ -17,6 +17,7 @@
 
 from __future__ import annotations
 
+import copy
 import enum
 import logging
 import re
@@ -31,6 +32,7 @@ from deprecation import deprecated
 from sqlglot import exp
 from sqlglot.dialects.dialect import Dialect, Dialects
 from sqlglot.errors import ParseError
+from sqlglot.optimizer.pushdown_predicates import pushdown_predicates
 from sqlglot.optimizer.scope import Scope, ScopeType, traverse_scope
 
 from superset.exceptions import SupersetParseError
@@ -225,6 +227,12 @@ class BaseSQLStatement(Generic[InternalRepresentation]):
         Check if the statement mutates data (DDL/DML).
 
         :return: True if the statement mutates data.
+        """
+        raise NotImplementedError()
+
+    def optimize(self) -> BaseSQLStatement[InternalRepresentation]:
+        """
+        Return optimized statement.
         """
         raise NotImplementedError()
 
@@ -432,6 +440,19 @@ class SQLStatement(BaseSQLStatement[exp.Expression]):
             for eq in set_item.find_all(exp.EQ)
         }
 
+    def optimize(self) -> SQLStatement:
+        """
+        Return optimized statement.
+        """
+        # only optimize statements that have a custom dialect
+        if not self._dialect:
+            return SQLStatement(self._sql, self.engine, self._parsed.copy())
+
+        optimized = pushdown_predicates(self._parsed, dialect=self._dialect)
+        sql = optimized.sql(dialect=self._dialect)
+
+        return SQLStatement(sql, self.engine, optimized)
+
 
 class KQLSplitState(enum.Enum):
     """
@@ -590,6 +611,14 @@ class KustoKQLStatement(BaseSQLStatement[str]):
         """
         return self._parsed.startswith(".") and not self._parsed.startswith(".show")
 
+    def optimize(self) -> KustoKQLStatement:
+        """
+        Return optimized statement.
+
+        Kusto KQL doesn't support optimization, so this method is a no-op.
+        """
+        return KustoKQLStatement(self._sql, self.engine, self._parsed)
+
 
 class SQLScript:
     """
@@ -643,6 +672,17 @@ class SQLScript:
         :return: True if the script contains mutating statements
         """
         return any(statement.is_mutating() for statement in self.statements)
+
+    def optimize(self) -> SQLScript:
+        """
+        Return optimized script.
+        """
+        script = copy.deepcopy(self)
+        script.statements = [  # type: ignore
+            statement.optimize() for statement in self.statements
+        ]
+
+        return script
 
 
 def extract_tables_from_statement(
