@@ -16,22 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Preset, VizType } from '@superset-ui/core';
-import BubbleChartPlugin from './Bubble';
-import BulletChartPlugin from './Bullet';
-import CompareChartPlugin from './Compare';
-import TimePivotChartPlugin from './TimePivot';
+import Icons from 'src/components/Icons';
+import Label from 'src/components/Label';
+import { t } from '@superset-ui/core';
 
-export default class NVD3ChartPreset extends Preset {
-  constructor() {
-    super({
-      name: 'NVD3 charts',
-      plugins: [
-        new BubbleChartPlugin().configure({ key: VizType.LegacyBubble }),
-        new BulletChartPlugin().configure({ key: VizType.Bullet }),
-        new CompareChartPlugin().configure({ key: VizType.Compare }),
-        new TimePivotChartPlugin().configure({ key: VizType.TimePivot }),
-      ],
-    });
-  }
+// Define props for the PublishedLabel component
+interface PublishedLabelProps {
+  isPublished: boolean; // Whether the item is published
+  onClick?: () => void; // Optional click handler
 }
+
+const PublishedLabel: React.FC<PublishedLabelProps> = ({
+  isPublished,
+  onClick,
+}) => {
+  const label = isPublished ? t('Published') : t('Draft');
+  const icon = isPublished ? (
+    <Icons.CircleCheck iconSize="s" />
+  ) : (
+    <Icons.Minus iconSize="s" />
+  );
+  const labelType = isPublished ? 'primary' : 'secondary';
+
+  return (
+    <Label type={labelType} icon={icon} onClick={onClick}>
+      {label}
+    </Label>
+  );
+};
+
+export default PublishedLabel;
