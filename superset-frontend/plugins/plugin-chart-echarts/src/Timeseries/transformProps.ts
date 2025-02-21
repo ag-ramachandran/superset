@@ -80,6 +80,7 @@ import {
   extractForecastValuesFromTooltipParams,
   formatForecastTooltipSeries,
   rebaseForecastDatum,
+  reorderForecastSeries,
 } from '../utils/forecast';
 import { convertInteger } from '../utils/convertInteger';
 import { defaultGrid, defaultYAxis } from '../defaults';
@@ -214,14 +215,18 @@ export default function transformProps(
   ) {
     xAxisLabel = verboseMap[xAxisLabel];
   }
+  const metricsLabels = metrics
+    .map(metric => getMetricLabel(metric, undefined, undefined, verboseMap))
+    .filter((label): label is string => label !== undefined);
   const isHorizontal = orientation === OrientationType.Horizontal;
+
   const { totalStackedValues, thresholdValues } = extractDataTotalValues(
     rebasedData,
     {
       stack,
       percentageThreshold,
-      xAxisCol: xAxisLabel,
       legendState,
+      metricsLabels,
     },
   );
   const extraMetricLabels = extractExtraMetrics(chartProps.rawFormData).map(
@@ -295,7 +300,6 @@ export default function transformProps(
     const entryName = String(entry.name || '');
     const seriesName = inverted[entryName] || entryName;
     const colorScaleKey = getOriginalSeries(seriesName, array);
-
     const transformedSeries = transformSeries(
       entry,
       colorScale,
@@ -621,10 +625,11 @@ export default function transformProps(
         theme,
         zoomable,
         legendState,
+        padding,
       ),
       data: legendData as string[],
     },
-    series: dedupSeries(series),
+    series: dedupSeries(reorderForecastSeries(series) as SeriesOption[]),
     toolbox: {
       show: zoomable,
       top: TIMESERIES_CONSTANTS.toolboxTop,

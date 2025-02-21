@@ -60,6 +60,7 @@ Join our growing community!
 - [Dropit Shopping](https://www.dropit.shop/) [@dropit-dev]
 - [Fanatics](https://www.fanatics.com/) [@coderfender]
 - [Fordeal](https://www.fordeal.com) [@Renkai]
+- [Fynd](https://www.fynd.com/) [@darpanjain07]
 - [GFG - Global Fashion Group](https://global-fashion-group.com) [@ksaagariconic]
 - [GoTo/Gojek](https://www.gojek.io/) [@gwthm-in]
 - [HuiShouBao](https://www.huishoubao.com/) [@Yukinoshita-Yukino]
@@ -115,6 +116,7 @@ Join our growing community!
 - [PubNub](https://pubnub.com) [@jzucker2]
 - [ReadyTech](https://www.readytech.io)
 - [Reward Gateway](https://www.rewardgateway.com)
+- [RIADVICE](https://riadvice.tn) [@riadvice]
 - [ScopeAI](https://www.getscopeai.com) [@iloveluce]
 - [Showmax](https://showmax.com) [@bobek]
 - [TechAudit](https://www.techaudit.info) [@ETselikov]
